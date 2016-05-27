@@ -1,9 +1,14 @@
-const app = angular.module('reddit', ['angularMoment', 'ngMessages']);
+const dependencies = ['angularMoment', 'ngMessages', 'ngAnimate'];
+const app = angular.module('reddit', dependencies);
 
-app.controller('site', function($scope){
+app.controller('site', function($scope, $timeout){
 
   $scope.vm = {};
-  $scope.vm.posts = seed();
+
+  $timeout(function(){
+    $scope.vm.posts = seed();
+  });
+
   $scope.vm.filter = '-votes';
   $scope.vm.nav = 'Votes';
   $scope.vm.search = '';

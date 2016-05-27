@@ -41,3 +41,15 @@ hr {
 .commentForm:hover {
   cursor: pointer;
 }
+
+.well.ng-enter {
+  animation: slideInRight .5s;
+}
+
+.well.ng-move {
+  animation: zoomIn .5s;
+}
+
+.well.ng-leave {
+  animation: fadeOut .5s;
+}
