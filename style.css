@@ -1,0 +1,43 @@
+.post-image {
+  max-height: 260px;
+}
+
+strong {
+  margin-right: 20px;
+}
+
+a {
+  color: darkgrey;
+}
+
+a:hover {
+  color: grey;
+}
+
+hr {
+  margin: 10px;
+}
+
+.post-date {
+  color: darkgrey;
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+.comments,
+.postComments {
+  margin-top: 20px;
+}
+
+.votes a:hover,
+.navSubmit:hover, 
+.commentClick:hover,
+.commentForm:hover {
+  cursor: pointer;
+}

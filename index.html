@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" ng-app='reddit'>
+<head>
+  <meta charset="UTF-8">
+  <title>Reddit</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha256-3dkvEK0WLHRJ7/Csr0BZjAWxERc5WH7bdeUya2aXxdU= sha512-+L4yy6FRcDGbXJ9mPG8MT/3UCDzwR9gPeyFNMCtInsol++5m3bk2bXWKdZjvybmohrAsn3Ua5x8gfLnbE1YkOg==" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+  <!-- load momentJS (id='author' required> angular-moment) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+  <!-- load angular-moment -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.10.3/angular-moment.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-messages.js"></script>
+  <script src="app.js"></script>
+  <script src="seed.js"></script>
+  <script src="helpers.js"></script>
+</head>
+<body ng-controller='site'> 
+
+  <nav class="navbar navbar-default" ng-controller='nav'>
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Reddit Clone</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li>
+            <a class='navSubmit' ng-click='vm.togglePostForm("open")'><i class='fa fa-plus'></i> Submit Post</a>
+          </li>
+        </ul>      
+        <form class="navbar-form navbar-left" role="search">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search" ng-model='vm.search'>
+          </div>
+        </form>
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By {{vm.nav}} <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a ng-click='vm.sortPosts("-votes")'>Votes</a></li>
+              <li><a ng-click='vm.sortPosts("-dates")'>Dates</a></li>
+              <li><a ng-click='vm.sortPosts("title")'>Title</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container" ng-controller='posts'>
+    <form name='postForm' class='jumbotron' ng-submit="vm.addPost(postForm)" ng-show="vm.postFormOpen == true" novalidate>
+      <div class="form-group" ng-class="{
+        'has-error': postForm.author.$touched && postForm.author.$invalid,
+        'has-success': postForm.author.$valid
+      }">
+        <label for="author" class='help-block'>Author:</label>
+        <input type="text" id='author' name='author' class='form-control' ng-model='vm.newPost.author' required>
+
+        <div class='help-block' ng-messages='postForm.author.$error' ng-if='postForm.author.$touched'>
+          <strong ng-message='required'>Author Name Is Required</strong>
+        </div>
+      </div>
+      <div class="form-group" ng-class="{
+        'has-error': postForm.title.$touched && postForm.title.$invalid,
+        'has-success': postForm.title.$valid
+      }">
+        <label for="title" class='help-block'>Title:</label>
+        <input type="text" id='title' name='title' class='form-control' ng-model='vm.newPost.title' required>
+
+        <div class='help-block' ng-messages='postForm.title.$error' ng-if='postForm.title.$touched'>
+          <strong ng-message='required'>Post Title Is Required</strong>
+        </div>
+      </div>
+      <div class="form-group" ng-class="{
+        'has-error': postForm.image.$touched && postForm.image.$invalid,
+        'has-success': postForm.image.$valid
+      }">
+        <label for="image" class='help-block'>Image:</label>
+        <input type="text" id='image' name='image' class='form-control' ng-model='vm.newPost.image' required>
+
+        <div class='help-block' ng-messages='postForm.image.$error' ng-if='postForm.image.$touched'>
+          <strong ng-message='required'>Post Image Is Required</strong>
+        </div>
+      </div>
+      <div class="form-group" ng-class="{
+        'has-error': postForm.description.$touched && postForm.description.$invalid,
+        'has-success': postForm.description.$valid
+      }">
+        <label for="description" class='help-block'>Description</label>
+        <textarea type="text" id='description' name='description' class='form-control' ng-model='vm.newPost.description' rows='8' required></textarea>
+
+        <div class='help-block' ng-messages='postForm.description.$error' ng-if='postForm.description.$touched'>
+          <strong ng-message='required'>Post Description Is Required</strong>
+        </div>
+      </div>
+      <div class="form-group text-center">
+        <button type='submit' class="btn btn-success">SUBMIT</button>
+        <button class="btn btn-danger" ng-click='vm.togglePostForm("close")'>CANCEL</button>
+      </div>
+    </form>
+
+    <div class="well" ng-repeat="post in vm.posts | filter: vm.search | orderBy: vm.filter">
+      <div class="row">
+        <div class="col-md-3">
+          <img src="{{post.image}}" alt="dog" class='post-image img-responsive img-rounded'>
+        </div>
+        <div class="col-md-9">
+          <div class="heading">
+            <div class="row">
+              <div class="col-md-9">
+                <h2>{{post.title}} |
+                  <span class='votes'>
+                    <a ng-click='vm.addVote("up", post.id)'><i class='fa fa-arrow-up'></i></a>
+                    <a ng-click='vm.addVote("down", post.id)'><i class='fa fa-arrow-down'></i></a>
+                    <span ng-class='{positive: post.votes >= 0, negative: post.votes < 0}'>{{post.votes}}</span>
+                  </span>
+                </h2>
+              </div>
+              <div class='col-md-3 text-center'>
+                <h2><small>by {{post.author}}</small></h2>
+              </div>
+            </div>
+          </div>
+          <hr>
+          <div class="body">
+            <div class="description">
+              <p class='lead'>{{post.description}}</p>
+            </div>
+            <div class="meta">
+              <strong>
+                <span>
+                  <i class='fa fa-calendar'></i>
+                  <time class='post-date' am-time-ago='post.date'></time> 
+                </span>
+              </strong>
+              <strong>
+                <span>
+                  <i class='fa fa-comments'></i>
+                  <a class='commentClick' ng-click='vm.toggleComments(post.id)'>{{post.comments.length == 1 ? '1 Comment' : post.comments.length + ' Comments'}}</a>
+                </span>
+              </strong>
+              <strong>
+                <span>
+                  <i class='fa fa-pencil'></i>
+                  <a class='commentForm' ng-click='vm.toggleCommentForm(post.id)'>Post Comment</a>
+                </span>
+              </strong>
+            </div>
+            <div class='comments' ng-show='post.commentsOpen == true'>
+              <table class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat='comment in post.comments'>
+                    <td>{{comment.author}}</td>
+                    <td>{{comment.description}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class='postComments' ng-show='post.commentFormOpen == true'>
+              <form name='commentForm' ng-submit='vm.addComment(commentForm, post.id)' novalidate>
+                <div class="form-group" ng-class="{
+                  'has-error': commentForm.author.$touched && commentForm.author.$invalid,
+                  'has-success': commentForm.author.$valid
+                }">
+                  <label for="commentAuthor" class='help-block'>Author: </label>
+                  <input type="text" name='author' id='commentAuthor' class='form-control' ng-model='vm.newComment.author' required>
+
+                  <div class='help-block' ng-messages='commentForm.author.$error' ng-if='commentForm.author.$touched'>
+                    <strong ng-message='required'>Author Name Is Required</strong>
+                  </div>
+                </div>
+                <div class="form-group" ng-class="{
+                  'has-error': commentForm.description.$touched && commentForm.description.$invalid,
+                  'has-success': commentForm.description.$valid
+                }">
+                  <label for="commentDescription" class='help-block'>Description: </label>
+                  <textarea name="description" id="commentDescription" class='form-control' rows="4" ng-model='vm.newComment.description' required></textarea>
+
+                  <div class='help-block' ng-messages='commentForm.description.$error' ng-if='commentForm.description.$touched'>
+                    <strong ng-message='required'>Comment Is Required</strong>
+                  </div>
+                </div>
+                <div class="form-group text-center">
+                  <button type='submit' class="btn btn-success">SUBMIT</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
